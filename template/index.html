@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Predictor | Feature Analysis</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --card-bg: #ffffff;
+            --success: #059669;
+            --error: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        .app-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 450px;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-predict {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-predict:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-predict:active {
+            transform: translateY(0);
+        }
+
+        /* Result Section Styling */
+        .result-box {
+            margin-top: 2rem;
+            padding: 1.2rem;
+            border-radius: 12px;
+            background-color: #ecfdf5;
+            border: 1px solid #d1fae5;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-box h3 {
+            color: var(--success);
+            font-size: 1.1rem;
+        }
+
+        .loading-text {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1>ML Feature Predictor</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Submit your data for analysis</p>
+        </header>
+
+        <form id="predictionForm" method="POST" action="/predict">
+            <div class="input-group">
+                <label>Area</label>
+                <input type="number" step="any" name="Area" placeholder="Enter Area" required>
+            </div>
+
+            <div class="input-group">
+                <label>MajorAxisLength</label>
+                <input type="number" step="any" name="MajorAxisLength" placeholder="Enter Major Axis Length" required>
+            </div>
+
+            <div class="input-group">
+                <label>MinorAxisLength</label>
+                <input type="number" step="any" name="MinorAxisLength" placeholder="Enter Minor Axis Length" required>
+            </div>
+
+            <div class="input-group">
+                <label>Eccentricity</label>
+                <input type="number" step="any" name="Eccentricity" placeholder="Enter Eccentricity" required>
+            </div>
+
+            <div class="input-group">
+                <label>ConvexArea</label>
+                <input type="number" step="any" name="ConvexArea" placeholder="Enter Convex Area" required>
+            </div>
+
+            <div class="input-group">
+                <label>Extent</label>
+                <input type="number" step="any" name="Extent" placeholder="Enter Extent" required>
+            </div>
+
+            <div class="input-group">
+                <label>Perimeter</label>
+                <input type="number" step="any" name="Perimeter" placeholder="Enter Perimeter" required>
+            </div>
+
+            <button type="submit" class="btn-predict" id="predictBtn">Predict</button>
+            <div class="loading-text" id="loadingText">Predicting...</div>
+        </form>
+
+        {% if prediction %}
+        <div class="result-box">
+            <h3>Prediction Result: {{ prediction }}</h3>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const form = document.getElementById('predictionForm');
+        const btn = document.getElementById('predictBtn');
+        const loader = document.getElementById('loadingText');
+
+        form.onsubmit = function() {
+            // Check all inputs
+            const inputs = form.querySelectorAll('input');
+            let allFilled = true;
+
+            inputs.forEach(input => {
+                if(input.value === "") {
+                    allFilled = false;
+                }
+            });
+
+            if(!allFilled) {
+                alert("Please fill all fields!");
+                return false;
+            }
+
+            // Show loading state
+            btn.style.display = 'none';
+            loader.style.display = 'block';
+            return true;
+        };
+    </script>
+</body>
+</html>
